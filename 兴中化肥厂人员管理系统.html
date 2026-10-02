@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>兴中化肥厂 · 管理系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; }
+        body { background: #f4f7fc; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 12px 8px 20px; }
+        .app-container { max-width: 420px; width: 100%; background: white; border-radius: 32px 32px 28px 28px; box-shadow: 0 12px 30px rgba(0, 20, 30, 0.08); overflow: hidden; padding: 18px 16px 24px; }
+        .app-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 14px; border-bottom: 1px solid #eef2f6; }
+        .app-header h1 { font-size: 20px; font-weight: 600; color: #0b2b3c; }
+        .app-header h1 i { color: #2a7f6e; margin-right: 6px; }
+        .header-badge { background: #e4edf2; padding: 6px 12px; border-radius: 40px; font-size: 12px; font-weight: 500; color: #1a4b5c; }
+        .header-badge i { margin-right: 4px; color: #2a7f6e; }
+        .auth-section { margin: 18px 0 16px; background: #f9fbfd; padding: 18px 14px; border-radius: 24px; }
+        .auth-tabs { display: flex; gap: 12px; margin-bottom: 14px; }
+        .auth-tab { flex: 1; text-align: center; padding: 10px 0; background: #ecf1f5; border-radius: 40px; font-weight: 500; font-size: 15px; color: #3b5b6b; cursor: pointer; border: none; }
+        .auth-tab.active { background: #1f5f6b; color: white; }
+        .auth-tab i { margin-right: 6px; }
+        .auth-form { display: flex; flex-direction: column; gap: 12px; }
+        .auth-form .input-group { background: white; border-radius: 40px; padding: 4px 16px; display: flex; align-items: center; border: 1px solid #dde6ed; }
+        .input-group i { color: #6f8a9a; font-size: 16px; width: 24px; text-align: center; }
+        .input-group input { border: none; outline: none; padding: 14px 8px; font-size: 15px; background: transparent; width: 100%; color: #152b34; }
+        .auth-btn { background: #1f5f6b; border: none; border-radius: 40px; padding: 14px; font-weight: 600; font-size: 17px; color: white; margin-top: 6px; cursor: pointer; }
+        .auth-message { text-align: center; font-size: 13px; color: #3f6a7a; padding: 6px 0 0; min-height: 22px; }
+        .auth-message.success { color: #1d7a5e; }
+        .auth-message.error { color: #b13e4b; }
+        .feature-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 18px 0 12px; }
+        .feature-item { background: #fafdff; border-radius: 20px; padding: 14px 4px; text-align: center; border: 1px solid #ecf3f8; cursor: pointer; }
+        .feature-item i { font-size: 24px; color: #1f5f6b; background: #e5f0f5; padding: 12px; border-radius: 30px; width: 48px; height: 48px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 6px; }
+        .feature-item span { display: block; font-size: 12px; font-weight: 500; color: #1f3d4a; }
+        .preview-card { background: #f8fafc; border-radius: 24px; padding: 16px 14px; margin: 16px 0 6px; border: 1px solid #e3ecf2; }
+        .preview-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .preview-header h3 { font-size: 16px; font-weight: 600; color: #10323e; }
+        .preview-list { display: flex; flex-direction: column; gap: 8px; }
+        .preview-item { background: white; padding: 12px 14px; border-radius: 20px; display: flex; align-items: center; gap: 12px; border: 1px solid #e6eef5; }
+        .preview-item .avatar { background: #d9e6ed; width: 40px; height: 40px; border-radius: 30px; display: flex; align-items: center; justify-content: center; font-weight: 600; color: #1b4b5a; }
+        .preview-item .info { flex: 1; }
+        .preview-item .info .name { font-weight: 600; font-size: 14px; color: #10323e; }
+        .preview-item .info .role { font-size: 12px; color: #4b6f7e; }
+        .preview-item .badge { background: #e1eff5; padding: 4px 12px; border-radius: 30px; font-size: 11px; font-weight: 500; color: #1b5b68; }
+        .admin-tag { background: #d4e0e8; padding: 10px 16px; border-radius: 40px; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; color: #1f4453; margin-top: 6px; cursor: pointer; }
+        .footer-note { font-size: 11px; color: #8ca6b5; text-align: center; margin-top: 18px; border-top: 1px solid #e6eef5; padding-top: 18px; }
+        .hidden { display: none !important; }
+        .mask { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center; z-index: 999; }
+        .pop { width: 90%; max-width: 360px; background: #fff; border-radius: 24px; padding: 20px 18px; }
+        .pop h4 { font-size: 17px; color: #0b2b3c; margin-bottom: 14px; text-align: center; }
+        .pop .pop-msg { text-align: center; font-size: 13px; color: #3f6a7a; min-height: 20px; margin-top: 8px; }
+        .pop .pop-msg.success { color: #1d7a5e; }
+        .pop .pop-msg.error { color: #b13e4b; }
+        .pop-close { margin-top: 8px; width: 100%; background: #ecf1f5; border: none; border-radius: 40px; padding: 11px; font-size: 15px; font-weight: 600; color: #1f5f6b; cursor: pointer; }
+    </style>
+</head>
+<body>
+<div class="app-container" id="app">
+    <header class="app-header"><h1><i class="fas fa-leaf"></i> 兴中化肥厂</h1><span class="header-badge"><i class="fas fa-user-cog"></i> 管理员</span></header>
+    <section class="auth-section" id="authSection">
+        <div class="auth-tabs">
+            <button class="auth-tab active" data-tab="login" id="tabLogin"><i class="fas fa-sign-in-alt"></i> 登录</button>
+            <button class="auth-tab" data-tab="register" id="tabRegister"><i class="fas fa-user-plus"></i> 注册</button>
+        </div>
+        <div id="loginForm" class="auth-form">
+            <div class="input-group"><i class="fas fa-user"></i><input type="text" id="loginUser" placeholder="用户名 / 工号" value="李梓潇"></div>
+            <div class="input-group"><i class="fas fa-lock"></i><input type="password" id="loginPass" placeholder="密码" value="lzx123456"></div>
+            <button class="auth-btn" id="loginBtn"><i class="fas fa-arrow-right-to-bracket"></i> 登录系统</button>
+            <div style="display:flex;justify-content:center;margin-top:4px;"><button id="changePwdLink" style="background:none;border:none;color:#1f5f6b;font-size:13px;cursor:pointer;text-decoration:underline;"><i class="fas fa-key"></i> 修改密码</button></div>
+            <div id="loginMessage" class="auth-message">默认管理员 李梓潇 / lzx123456</div>
+        </div>
+        <div id="registerForm" class="auth-form hidden">
+            <div class="input-group"><i class="fas fa-id-badge"></i><input type="text" id="regUser" placeholder="真实姓名 / 工号"></div>
+            <div class="input-group"><i class="fas fa-envelope"></i><input type="email" id="regEmail" placeholder="邮箱 (选填)"></div>
+            <div class="input-group"><i class="fas fa-lock"></i><input type="password" id="regPass" placeholder="密码 (至少6位)"></div>
+            <div class="input-group"><i class="fas fa-user-tie"></i><input type="text" id="regRole" placeholder="职位 (如: 车间主任)"></div>
+            <button class="auth-btn" id="registerBtn"><i class="fas fa-user-check"></i> 注册新账号</button>
+            <div id="registerMessage" class="auth-message">填写信息后注册，默认角色为“员工”</div>
+        </div>
+    </section>
+    <div class="feature-grid">
+        <div class="feature-item" id="navPersonnel"><i class="fas fa-users"></i><span>人员</span></div>
+        <div class="feature-item" id="navPosition"><i class="fas fa-briefcase"></i><span>职位</span></div>
+        <div class="feature-item" id="navForum"><i class="fas fa-comments"></i><span>论坛</span></div>
+        <div class="feature-item" id="navNotice"><i class="fas fa-bullhorn"></i><span>公告</span></div>
+    </div>
+    <div style="display: flex; justify-content: flex-end; margin: -4px 0 2px;"><span class="admin-tag"><i class="fas fa-shield-alt"></i> 管理员控制台</span></div>
+    <div class="preview-card" id="dynamicPreview">
+        <div class="preview-header"><h3 id="previewTitle"><i class="fas fa-users" style="margin-right: 6px;"></i> 人员管理</h3><i class="fas fa-chevron-right" style="opacity:0.6;"></i></div>
+        <div id="previewContent" class="preview-list"></div>
+    </div>
+    <div class="footer-note"><i class="fas fa-mobile-alt"></i> 兴中化肥厂 · 移动管理系统 v1.1</div>
+</div>
+<script>
+(function() {
+    const DEFAULT_USERS = [
+        { username: '李梓潇', password: 'lzx123456', email: 'lizixiao@xingzhong.com', role: '管理员', position: '厂长' },
+        { username: 'zhangwei', password: '123456', email: 'zhangwei@xingzhong.com', role: '车间主任', position: '生产部' },
+        { username: 'lili', password: '123456', email: 'lili@xingzhong.com', role: '技术员', position: '技术部' },
+    ];
+    let users = JSON.parse(localStorage.getItem('xz_users')) || DEFAULT_USERS;
+    let forumPosts = [
+        { id: 1, title: '关于化肥生产线升级的讨论', author: '张工', time: '2026-08-10 09:20' },
+        { id: 2, title: '安全生产月活动安排', author: '安全科', time: '2026-08-09 16:45' },
+    ];
+    let notices = [
+        { id: 1, title: '8月15日全厂设备检修', date: '2026-08-10' },
+        { id: 2, title: '新员工入职培训通知', date: '2026-08-12' },
+    ];
+    let currentUser = JSON.parse(localStorage.getItem('xz_currentUser')) || null;
+    function saveUsers() { localStorage.setItem('xz_users', JSON.stringify(users)); }
+    function saveCurrentUser() { localStorage.setItem('xz_currentUser', JSON.stringify(currentUser)); }
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const tabLogin = document.getElementById('tabLogin');
+    const tabRegister = document.getElementById('tabRegister');
+    const loginBtn = document.getElementById('loginBtn');
+    const registerBtn = document.getElementById('registerBtn');
+    const loginMessage = document.getElementById('loginMessage');
+    const registerMessage = document.getElementById('registerMessage');
+    const loginUser = document.getElementById('loginUser');
+    const loginPass = document.getElementById('loginPass');
+    const regUser = document.getElementById('regUser');
+    const regEmail = document.getElementById('regEmail');
+    const regPass = document.getElementById('regPass');
+    const regRole = document.getElementById('regRole');
+    const previewTitle = document.getElementById('previewTitle');
+    const previewContent = document.getElementById('previewContent');
+    const navPersonnel = document.getElementById('navPersonnel');
+    const navPosition = document.getElementById('navPosition');
+    const navForum = document.getElementById('navForum');
+    const navNotice = document.getElementById('navNotice');
+    function setMessage(el, text, type) { el.textContent = text; el.className = 'auth-message ' + (type || ''); }
+    function renderPreview(module) {
+        let title = ''; let contentHtml = '';
+        switch(module) {
+            case 'personnel':
+                title = '<i class="fas fa-users" style="margin-right: 6px;"></i> 人员管理';
+                contentHtml = users.map(u => '<div class="preview-item"><div class="avatar">' + u.username.charAt(0).toUpperCase() + '</div><div class="info"><div class="name">' + u.username + ' <span style="font-weight:400;font-size:12px;color:#4f7385;">' + (u.role || '员工') + '</span></div><div class="role">' + (u.position || '未设职位') + (u.email ? ' · '+u.email : '') + '</div></div><span class="badge">' + (u.role === '管理员' ? '管理员' : '成员') + '</span></div>').join('');
+                break;
+            case 'position':
+                title = '<i class="fas fa-briefcase" style="margin-right: 6px;"></i> 职位';
+                const positions = [...new Set(users.map(u => u.position || '未分配'))];
+                contentHtml = positions.map(p => '<div class="preview-item" style="justify-content:space-between;"><span><i class="fas fa-tag" style="color:#1f5f6b;margin-right:10px;"></i> ' + p + '</span><span class="badge">' + users.filter(u => u.position === p).length + ' 人</span></div>').join('');
+                break;
+            case 'forum':
+                title = '<i class="fas fa-comments" style="margin-right: 6px;"></i> 论坛 · 最新';
+                contentHtml = forumPosts.map(p => '<div style="background:white;padding:12px 14px;border-radius:18px;border-left:4px solid #2a7f6e;margin-bottom:6px;"><div style="font-weight:500;color:#10323e;"><i class="far fa-file-alt" style="color:#2a7f6e;margin-right:6px;"></i> ' + p.title + '</div><div style="font-size:11px;color:#688b9b;margin-top:4px;"><i class="far fa-user"></i> ' + p.author + ' · ' + p.time + '</div></div>').join('');
+                break;
+            case 'notice':
+                title = '<i class="fas fa-bullhorn" style="margin-right: 6px;"></i> 公告';
+                contentHtml = notices.map(n => '<div class="preview-item" style="flex-direction:column;align-items:flex-start;gap:4px;"><div style="font-weight:500;color:#10323e;"><i class="fas fa-circle" style="color:#2a7f6e;font-size:10px;margin-right:6px;"></i>' + n.title + '</div><div style="font-size:12px;color:#5c7f8f;"><i class="far fa-calendar-alt"></i> ' + n.date + '</div></div>').join('');
+                break;
+            default: title = '模块'; contentHtml = '<div style="padding:12px;text-align:center;">选择功能</div>';
+        }
+        previewTitle.innerHTML = title; previewContent.innerHTML = contentHtml;
+    }
+    function setAuthTab(tab) {
+        if (tab === 'login') { loginForm.classList.remove('hidden'); registerForm.classList.add('hidden'); tabLogin.classList.add('active'); tabRegister.classList.remove('active'); }
+        else { loginForm.classList.add('hidden'); registerForm.classList.remove('hidden'); tabRegister.classList.add('active'); tabLogin.classList.remove('active'); }
+        setMessage(loginMessage, '', ''); setMessage(registerMessage, '', '');
+    }
+    function handleLogin() {
+        const username = loginUser.value.trim(); const password = loginPass.value.trim();
+        if (!username || !password) { setMessage(loginMessage, '请输入用户名和密码', 'error'); return; }
+        const found = users.find(u => u.username === username && u.password === password);
+        if (found) {
+            currentUser = found; saveCurrentUser();
+            setMessage(loginMessage, '✅ 登录成功，欢迎 ' + found.username + ' (' + (found.role || '员工') + ')', 'success');
+            if (found.role === '管理员') document.querySelector('.header-badge').innerHTML = '<i class="fas fa-user-cog"></i> 管理员';
+            else document.querySelector('.header-badge').innerHTML = '<i class="fas fa-user"></i> ' + (found.role || '员工');
+            renderPreview('personnel');
+        } else setMessage(loginMessage, '❌ 用户名或密码错误', 'error');
+    }
+    function handleRegister() {
+        const username = regUser.value.trim(); const email = regEmail.value.trim(); const password = regPass.value.trim(); const role = regRole.value.trim() || '员工';
+        if (!username || password.length < 6) { setMessage(registerMessage, '用户名必填，密码至少6位', 'error'); return; }
+        if (users.some(u => u.username === username)) { setMessage(registerMessage, '用户名已存在', 'error'); return; }
+        const newUser = { username, password, email: email || '未设置', role: role, position: '未分配' };
+        users.push(newUser); saveUsers();
+        setMessage(registerMessage, '🎉 注册成功！欢迎 ' + username, 'success');
+        regUser.value=''; regEmail.value=''; regPass.value=''; regRole.value='';
+        setAuthTab('login'); loginUser.value = username; loginPass.value = password;
+        setMessage(loginMessage, '注册成功，请登录', 'success');
+    }
+    tabLogin.addEventListener('click', function() { setAuthTab('login'); });
+    tabRegister.addEventListener('click', function() { setAuthTab('register'); });
+    loginBtn.addEventListener('click', handleLogin);
+    registerBtn.addEventListener('click', handleRegister);
+    const changePwdLink = document.getElementById('changePwdLink');
+    changePwdLink.addEventListener('click', function() {
+        const mask = document.createElement('div'); mask.className = 'mask';
+        mask.innerHTML = '<div class="pop"><h4><i class="fas fa-key" style="color:#2a7f6e;margin-right:6px;"></i> 修改密码</h4><div class="auth-form"><div class="input-group"><i class="fas fa-user"></i><input type="text" id="cpUser" placeholder="用户名" value="' + (currentUser ? currentUser.username : '') + '"></div><div class="input-group"><i class="fas fa-lock"></i><input type="password" id="cpOld" placeholder="原密码"></div><div class="input-group"><i class="fas fa-lock"></i><input type="password" id="cpNew" placeholder="新密码 (至少6位)"></div><div class="input-group"><i class="fas fa-lock"></i><input type="password" id="cpNew2" placeholder="确认新密码"></div><button class="auth-btn" id="cpOk"><i class="fas fa-check"></i> 确认修改</button><div id="cpMsg" class="pop-msg"></div></div><button class="pop-close" id="cpClose"><i class="fas fa-times"></i> 关闭</button></div>';
+        document.body.appendChild(mask);
+        function close() { mask.remove(); }
+        mask.querySelector('#cpClose').addEventListener('click', close);
+        mask.addEventListener('click', function(e) { if (e.target === mask) close(); });
+        mask.querySelector('#cpOk').addEventListener('click', function() {
+            const un = mask.querySelector('#cpUser').value.trim();
+            const oldPwd = mask.querySelector('#cpOld').value.trim();
+            const newPwd = mask.querySelector('#cpNew').value.trim();
+            const newPwd2 = mask.querySelector('#cpNew2').value.trim();
+            const msg = mask.querySelector('#cpMsg'); msg.className = 'pop-msg';
+            if (!un || !oldPwd || !newPwd) { msg.textContent = '请填写用户名、原密码和新密码'; msg.classList.add('error'); return; }
+            const user = users.find(u => u.username === un);
+            if (!user) { msg.textContent = '❌ 用户不存在'; msg.classList.add('error'); return; }
+            if (user.password !== oldPwd) { msg.textContent = '❌ 原密码错误'; msg.classList.add('error'); return; }
+            if (newPwd.length < 6) { msg.textContent = '❌ 新密码至少6位'; msg.classList.add('error'); return; }
+            if (newPwd !== newPwd2) { msg.textContent = '❌ 两次输入的新密码不一致'; msg.classList.add('error'); return; }
+            user.password = newPwd; saveUsers();
+            if (currentUser && currentUser.username === un) { currentUser = user; saveCurrentUser(); }
+            msg.textContent = '✅ 密码修改成功！'; msg.classList.add('success');
+            mask.querySelector('#cpOld').value=''; mask.querySelector('#cpNew').value=''; mask.querySelector('#cpNew2').value='';
+            setTimeout(close, 1200);
+        });
+    });
+    navPersonnel.addEventListener('click', function() { renderPreview('personnel'); });
+    navPosition.addEventListener('click', function() { renderPreview('position'); });
+    navForum.addEventListener('click', function() { renderPreview('forum'); });
+    navNotice.addEventListener('click', function() { renderPreview('notice'); });
+    renderPreview('personnel');
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') { if (!loginForm.classList.contains('hidden')) handleLogin(); else if (!registerForm.classList.contains('hidden')) handleRegister(); }
+    });
+    document.querySelector('.admin-tag')?.addEventListener('click', function() { alert('⚙️ 管理员控制台\n当前登录: ' + (currentUser ? currentUser.username : '未登录')); });
+    console.log('兴中化肥厂管理系统 v1.1 管理员：李梓潇');
+})();
+</script>
+</body>
+</html>
